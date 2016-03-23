@@ -205,7 +205,7 @@ macro(PCL_ADD_LIBRARY _name _component)
         SOVERSION ${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+      set_target_properties(${_name} PROPERTIES FOLDER "PCL")
     endif(USE_PROJECT_FOLDERS)
 
     install(TARGETS ${_name}

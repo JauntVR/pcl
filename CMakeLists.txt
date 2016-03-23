@@ -222,8 +222,8 @@ endif(WIN32)
 # Add an "uninstall" target
 configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
                "${PCL_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
-add_custom_target(uninstall "${CMAKE_COMMAND}" -P
-                  "${PCL_BINARY_DIR}/uninstall_target.cmake")
+#add_custom_target(uninstall "${CMAKE_COMMAND}" -P
+#                  "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
 ###
 # this is copy paste form http://www.itk.org/Wiki/CMake_RPATH_handling
@@ -271,16 +271,16 @@ else(OPENMP_FOUND)
 endif()
 
 # Eigen (required)
-find_package(Eigen REQUIRED)
-include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
+#find_package(Eigen REQUIRED)
+set(EIGEN_FOUND TRUE)
 add_definitions(-DEIGEN_USE_NEW_STDVECTOR
                 -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 # FLANN (required)
 if(NOT PCL_SHARED_LIBS OR (WIN32 AND NOT MINGW))
   set(FLANN_USE_STATIC ON)
 endif(NOT PCL_SHARED_LIBS OR (WIN32 AND NOT MINGW))
-find_package(FLANN 1.7.0 REQUIRED)
-include_directories(${FLANN_INCLUDE_DIRS})
+#find_package(FLANN 1.7.0 REQUIRED)
+set (FLANN_FOUND TRUE)
 
 # libusb-1.0
 option(WITH_LIBUSB "Build USB RGBD-Camera drivers" TRUE)
@@ -292,13 +292,14 @@ if(WITH_LIBUSB)
 endif(WITH_LIBUSB)
 
 # Dependencies for different grabbers
-PCL_ADD_GRABBER_DEPENDENCY("OpenNI" "OpenNI grabber support")
-PCL_ADD_GRABBER_DEPENDENCY("OpenNI2" "OpenNI2 grabber support")
-PCL_ADD_GRABBER_DEPENDENCY("FZAPI" "Fotonic camera support")
-PCL_ADD_GRABBER_DEPENDENCY("Ensenso" "IDS-Imaging Ensenso camera support")
-PCL_ADD_GRABBER_DEPENDENCY("davidSDK" "David Vision Systems SDK support")
-PCL_ADD_GRABBER_DEPENDENCY("DSSDK" "DepthSense SDK support")
-PCL_ADD_GRABBER_DEPENDENCY("RSSDK" "RealSense SDK support")
+#PCL_ADD_GRABBER_DEPENDENCY("OpenNI" "OpenNI grabber support")
+#PCL_ADD_GRABBER_DEPENDENCY("OpenNI2" "OpenNI2 grabber support")
+#PCL_ADD_GRABBER_DEPENDENCY("FZAPI" "Fotonic camera support")
+#PCL_ADD_GRABBER_DEPENDENCY("Ensenso" "IDS-Imaging Ensenso camera support")
+#PCL_ADD_GRABBER_DEPENDENCY("davidSDK" "David Vision Systems SDK support")
+#PCL_ADD_GRABBER_DEPENDENCY("DSSDK" "DepthSense SDK support")
+#PCL_ADD_GRABBER_DEPENDENCY("RSSDK" "RealSense SDK support")
+set(WITH_RSSDK FALSE)
 
 # metslib
 if (PKG_CONFIG_FOUND)
@@ -359,7 +360,7 @@ endif(WITH_QT)
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
-  find_package(VTK)
+  find_package(VTK PATHS ${VTK_COMPILE_DIR})
   if(VTK_FOUND)
     if(NOT DEFINED VTK_RENDERING_BACKEND)
       # On old VTK versions this variable does not exist. In this case it is
@@ -414,7 +415,8 @@ if(WITH_OPENGL)
 endif(WITH_OPENGL)
 
 # Boost (required)
-include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
+#include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
+set(BOOST_FOUND TRUE)
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
