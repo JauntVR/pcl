@@ -360,7 +360,7 @@ endif(WITH_QT)
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
-  find_package(VTK PATHS ${VTK_COMPILE_DIR})
+  find_package(VTK)
   if(VTK_FOUND)
     if(NOT DEFINED VTK_RENDERING_BACKEND)
       # On old VTK versions this variable does not exist. In this case it is
