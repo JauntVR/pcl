@@ -76,7 +76,7 @@ pcl::MeshProcessing::process (pcl::PolygonMesh &output)
   // \TODO: Double check if this is needed
   {
     output.polygons.clear ();
-    output.polygons.reserve (2*input_mesh_->polygons.size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
+    output.polygons.reserve (input_mesh_->polygons.size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
   }
   // Perform the actual surface reconstruction
   performProcessing (output);

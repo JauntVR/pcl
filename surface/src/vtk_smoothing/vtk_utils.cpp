@@ -210,6 +210,7 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
       memcpy(&pt[2], &mesh.cloud.data[xyz_offset[2]], sizeof(float));
       vtk_mesh_points->InsertPoint(cp, pt[0], pt[1], pt[2]);
     }
+    poly_data->SetPoints(vtk_mesh_points);
   }
 
   // copy polygon data
