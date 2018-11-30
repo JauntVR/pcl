@@ -64,6 +64,13 @@
 
 #include <pcl/visualization/common/shapes.h>
 
+//Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
@@ -593,7 +600,9 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetInterpolationToFlat ();
   actor->GetProperty ()->SetColor (r, g, b);
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   actor->GetMapper ()->ImmediateModeRenderingOn ();
+#endif
   actor->GetMapper ()->StaticOn ();
   actor->GetMapper ()->ScalarVisibilityOff ();
   actor->GetMapper ()->Update ();
@@ -1416,7 +1425,9 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1452,7 +1463,9 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1527,8 +1540,9 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   scalars->GetRange (minmax);
   // Update the data
   polydata->GetPointData ()->SetScalars (scalars);
-
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
