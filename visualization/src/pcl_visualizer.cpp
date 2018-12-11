@@ -96,12 +96,23 @@
 #include <vtkLookupTable.h>
 #include <vtkTextureUnitManager.h>
 
+#if VTK_MAJOR_VERSION > 7
+#include <vtkTexture.h>
+#endif
+
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/common/time.h>
 #include <boost/uuid/sha1.hpp>
 #include <boost/filesystem.hpp>
 #include <pcl/console/parse.h>
+
+ // Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
 
 #if defined(_WIN32)
   // Remove macros defined in Windows.h
@@ -1138,7 +1149,9 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
         mapper->ScalarVisibilityOn ();
       }
     }
-    mapper->ImmediateModeRenderingOff ();
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
+	mapper->ImmediateModeRenderingOff();
+#endif
 
     actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
     actor->GetProperty ()->SetInterpolationToFlat ();
@@ -1218,7 +1231,9 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
         mapper->ScalarVisibilityOn ();
       }
     }
-    mapper->ImmediateModeRenderingOff ();
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
+	mapper->ImmediateModeRenderingOff();
+#endif
 
     //actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
     actor->GetProperty ()->SetInterpolationToFlat ();
@@ -1412,7 +1427,9 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     // using immediate more rendering.
     case PCL_VISUALIZER_IMMEDIATE_RENDERING:
     {
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
       actor->GetMapper ()->SetImmediateModeRendering (int (value));
+#endif
       actor->Modified ();
       break;
     }
@@ -3244,10 +3261,14 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
                 texture_units, mesh.tex_materials.size ());
     // Load textures
     std::size_t last_tex_id = std::min (static_cast<int> (mesh.tex_materials.size ()), texture_units);
-    int tu = vtkProperty::VTK_TEXTURE_UNIT_0;
     std::size_t tex_id = 0;
     while (tex_id < last_tex_id)
     {
+#if (VTK_MAJOR_VERSION == 8 && VTK_MINOR_VERSION >= 2) || VTK_MAJOR_VERSION > 8
+      const char *tu = mesh.tex_materials[tex_id].tex_name.c_str();
+#else
+      int tu = vtkProperty::VTK_TEXTURE_UNIT_0 + tex_id;
+#endif
       vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New ();
       if (textureFromTexMaterial (mesh.tex_materials[tex_id], texture))
       {
